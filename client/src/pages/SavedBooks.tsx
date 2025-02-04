@@ -1,0 +1,89 @@
+
+import { Container, Card, Button, Row, Col } from 'react-bootstrap';
+import Auth from '../utils/auth';
+import { removeBookId } from '../utils/localStorage';
+import { GET_ME } from '../graphql/queries';
+import { REMOVE_BOOK } from '../graphql/mutations';
+import { useMutation, useQuery } from '@apollo/client';
+import { Key, ReactElement, JSXElementConstructor, ReactNode, ReactPortal } from 'react';
+
+const SavedBooks = () => {
+  // Fetch user data using useQuery
+  const { loading, data } = useQuery(GET_ME);
+  const userData = data?.me || { savedBooks: [] };
+
+  const [removeBook] = useMutation(REMOVE_BOOK);
+
+  // Function to handle book deletion
+  const handleDeleteBook = async (bookId: string) => {
+    if (!Auth.loggedIn()) {
+      return;
+    }
+
+    try {
+      await removeBook({ variables: { bookId } });
+
+      // Remove book from localStorage
+      removeBookId(bookId);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  if (loading) {
+    return <h2>LOADING...</h2>;
+  }
+
+  return (
+    <>
+      <div className='text-light bg-dark p-5'>
+        <Container>
+          {userData.username ? (
+            <h1>Viewing {userData.username}'s saved books!</h1>
+          ) : (
+            <h1>Viewing saved books!</h1>
+          )}
+        </Container>
+      </div>
+      <Container>
+        <h2 className='pt-5'>
+          {userData.savedBooks.length
+            ? `Viewing ${userData.savedBooks.length} saved ${
+                userData.savedBooks.length === 1 ? 'book' : 'books'
+              }:`
+            : 'You have no saved books!'}
+        </h2>
+        <Row>
+          {userData.savedBooks.map((book: { bookId: Key | null | undefined; image: string | undefined; title: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | null | undefined; authors: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | null | undefined; description: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | null | undefined; }) => {
+            return (
+              <Col md='4'>
+                <Card key={book.bookId} border='dark'>
+                  {book.image ? (
+                    <Card.Img
+                      src={book.image}
+                      alt={`The cover for ${book.title}`}
+                      variant='top'
+                    />
+                  ) : null}
+                  <Card.Body>
+                    <Card.Title>{book.title}</Card.Title>
+                    <p className='small'>Authors: {book.authors}</p>
+                    <Card.Text>{book.description}</Card.Text>
+                    <Button
+                      className='btn-block btn-danger'
+                      onClick={() => handleDeleteBook(book.bookId)}
+                    >
+                      Delete this Book!
+                    </Button>
+                  </Card.Body>
+                </Card>
+              </Col>
+            );
+          })}
+        </Row>
+      </Container>
+    </>
+  );
+};
+
+export default SavedBooks;
