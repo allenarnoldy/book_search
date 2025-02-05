@@ -18,7 +18,7 @@ const server = new ApolloServer<MyContext>({
 
 const startApolloServer = async () => {
   await server.start();
-  await db;
+  db;
 
   const PORT = process.env.PORT || 3001;
   const app = express();

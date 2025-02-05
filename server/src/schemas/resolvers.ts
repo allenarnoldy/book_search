@@ -12,13 +12,7 @@ interface LoginUserArgs {
     password: string;
 }
 
-interface AddUserArgs {
-    input: {
-        username: string;
-        email: string;
-        password: string;
-    }
-}
+
 
 const resolvers = {
     Query: {

@@ -1,16 +1,23 @@
-
+import { useState, useEffect } from 'react';
 import { Container, Card, Button, Row, Col } from 'react-bootstrap';
 import Auth from '../utils/auth';
 import { removeBookId } from '../utils/localStorage';
 import { GET_ME } from '../graphql/queries';
 import { REMOVE_BOOK } from '../graphql/mutations';
 import { useMutation, useQuery } from '@apollo/client';
-import { Key, ReactElement, JSXElementConstructor, ReactNode, ReactPortal } from 'react';
+import { User } from '../models/User';
 
 const SavedBooks = () => {
-  // Fetch user data using useQuery
+   const [userData, setUserData] = useState<User>({
+    username: '',
+    email: '',
+    password: '',
+    savedBooks: [],
+   });
+
   const { loading, data } = useQuery(GET_ME);
-  const userData = data?.me || { savedBooks: [] };
+
+  const userProfileData = data;
 
   const [removeBook] = useMutation(REMOVE_BOOK);
 
@@ -54,7 +61,7 @@ const SavedBooks = () => {
             : 'You have no saved books!'}
         </h2>
         <Row>
-          {userData.savedBooks.map((book: { bookId: Key | null | undefined; image: string | undefined; title: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | null | undefined; authors: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | null | undefined; description: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | null | undefined; }) => {
+          {userData.savedBooks.map((book) => {
             return (
               <Col md='4'>
                 <Card key={book.bookId} border='dark'>

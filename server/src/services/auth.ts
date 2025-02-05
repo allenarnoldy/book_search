@@ -13,24 +13,28 @@ interface JwtPayload {
 export const authenticateToken = async ({req}: {req:Request}) => {
   let token = req.headers.authorization || req.body.token || req.query.token;
 
-  if (!token) {
-    throw new Error('Header is missing');
+  if (req.headers.authorization) {
+    token = token.split(' ').pop().trim();
   }
 
-  token = token.split(' ')[1];
-  const secretKey = process.env.JWT_SECRET_KEY || '';
-  console.log(secretKey);
-  console.log(token);
+  if (!token) {
+    return req;
+  }
+
+  // token = token.split(' ')[1];
+  // const secretKey = process.env.JWT_SECRET_KEY || '';
+  //console.log(secretKey);
+  // console.log(token);
   try {
-    var user = jwt.verify(token, secretKey) as JwtPayload;
-    req.headers._id = user._id;
-  } catch (err) {
+    const {data} : any = jwt.verify(token, process.env.JWT_SECRET_KEY || '', { maxAge: '1hr'});
+    req.user = data as JwtPayload
+   } catch (err) {
     throw new Error('Invalid token');
   }
-  return {_id: req.headers._id}//req.headers._id;
+  return req;
 };
 
-export const signToken = (username: string, email: string, _id: string) => {
+export const signToken = (username: string, email: string, _id: unknown) => {
   const payload = { username, email, _id };
   const secretKey = process.env.JWT_SECRET_KEY || '';
 
