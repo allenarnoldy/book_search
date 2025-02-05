@@ -7,9 +7,15 @@ import { authenticateToken } from './services/auth.js';
 import { typeDefs, resolvers } from './schemas/index.js'  
 import type { Request, Response } from 'express';
 
+
 interface MyContext {
   _id?: String;
 }
+
+import { fileURLToPath } from 'node:url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const server = new ApolloServer<MyContext>({
   typeDefs,
