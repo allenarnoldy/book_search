@@ -1,23 +1,23 @@
-import { useState, useEffect } from 'react';
+// import { useState, useEffect } from 'react';
 import { Container, Card, Button, Row, Col } from 'react-bootstrap';
 import Auth from '../utils/auth';
 import { removeBookId } from '../utils/localStorage';
 import { GET_ME } from '../graphql/queries';
 import { REMOVE_BOOK } from '../graphql/mutations';
 import { useMutation, useQuery } from '@apollo/client';
-import { User } from '../models/User';
+// import { User } from '../models/User';
 
 const SavedBooks = () => {
-   const [userData, setUserData] = useState<User>({
-    username: '',
-    email: '',
-    password: '',
-    savedBooks: [],
-   });
+  //  const [userData, setUserData] = useState<User>({
+  //   username: '',
+  //   email: '',
+  //   password: '',
+  //   savedBooks: [],
+  //  });
 
   const { loading, data } = useQuery(GET_ME);
-
-  const userProfileData = data;
+   console.log(data);
+  const userData = data?.me;
 
   const [removeBook] = useMutation(REMOVE_BOOK);
 
@@ -54,14 +54,14 @@ const SavedBooks = () => {
       </div>
       <Container>
         <h2 className='pt-5'>
-          {userData.savedBooks.length
+          {userData.savedBooks?.length
             ? `Viewing ${userData.savedBooks.length} saved ${
                 userData.savedBooks.length === 1 ? 'book' : 'books'
               }:`
             : 'You have no saved books!'}
         </h2>
         <Row>
-          {userData.savedBooks.map((book) => {
+          {userData?.savedBooks?.map((book: any) => {
             return (
               <Col md='4'>
                 <Card key={book.bookId} border='dark'>
