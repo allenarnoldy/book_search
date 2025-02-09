@@ -29,13 +29,18 @@ export const ADD_USER = gql`
 `;
 
 export const REMOVE_BOOK = gql `
-mutation RemoveBook($bookId: ID!) {
+mutation RemoveBook($bookId: String!) {
   removeBook(bookId: $bookId) {
-    title
-    image
-    description
-    bookId
-    authors
+    _id
+    username
+    savedBooks {
+      bookId
+      title
+      authors
+      description
+      image 
+      link
+    }
   }
 }
 `;

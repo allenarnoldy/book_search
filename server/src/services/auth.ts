@@ -12,7 +12,7 @@ interface JwtPayload {
 
 export const authenticateToken = async ({req}: {req:Request}) => {
   let token = req.headers.authorization || req.body.token || req.query.token;
-
+  console.log(process.env.JWT_SECRET_KEY);
   if (req.headers.authorization) {
     token = token.split(' ').pop().trim();
   }
